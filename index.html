@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 </head>
 <style>
     :root {
@@ -317,6 +318,184 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     
+    /* Document section styles */
+    .document-section {
+        margin: 3rem 0;
+        background-color: #f0f9f8;
+        padding: 2rem;
+        border-radius: 8px;
+        border-left: 5px solid var(--water);
+    }
+    
+    .document-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        align-items: center;
+        margin-top: 1.5rem;
+    }
+    
+    .document-preview {
+        flex: 1;
+        min-width: 300px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    
+    .document-preview:hover {
+        transform: translateY(-5px);
+    }
+    
+    .document-cover {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .document-info {
+        padding: 1.5rem;
+    }
+    
+    .document-info h3 {
+        color: var(--water);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .document-info h3 i {
+        margin-right: 0.8rem;
+    }
+    
+    .document-info p {
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .document-details {
+        flex: 2;
+        min-width: 300px;
+    }
+    
+    .document-details ul {
+        list-style-type: none;
+    }
+    
+    .document-details li {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .document-details i {
+        margin-right: 0.8rem;
+        color: var(--water);
+    }
+    
+    .view-document-btn {
+        display: inline-flex;
+        align-items: center;
+        background-color: var(--water);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+    
+    .view-document-btn:hover {
+        background-color: #00838f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .view-document-btn i {
+        margin-right: 0.5rem;
+        color: white;
+    }
+    
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        overflow: auto;
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 2% auto;
+        padding: 2rem;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        color: #aaa;
+        font-size: 2rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .close-modal:hover {
+        color: var(--water);
+    }
+    
+    #pdf-viewer {
+        width: 100%;
+        height: 70vh;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .pdf-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .pdf-controls button {
+        background-color: var(--water);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .pdf-controls button:hover {
+        background-color: #00838f;
+    }
+    
+    .page-info {
+        display: flex;
+        align-items: center;
+        margin: 0 1rem;
+    }
+    
     /* Eco-friendly footer */
     footer {
         background-color: var(--dark);
@@ -452,6 +631,15 @@
         .action-grid {
             grid-template-columns: 1fr;
         }
+        
+        .document-container {
+            flex-direction: column;
+        }
+        
+        .modal-content {
+            width: 95%;
+            padding: 1rem;
+        }
     }
 </style>
 <body>
@@ -543,6 +731,40 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Document Section with Modal -->
+                <div class="document-section">
+                    <h2 style="font-family: 'Merriweather', serif; color: var(--water); margin-bottom: 1.5rem; display: flex; align-items: center;">
+                        <i class="fas fa-file-pdf" style="margin-right: 1rem;"></i> Annex Document: Marine Conservation
+                    </h2>
+                    
+                    <p>Complete guide on protecting underwater ecosystems and sustainable practices to preserve marine life.</p>
+                    
+                    <div class="document-container">
+                        <div class="document-preview" id="open-pdf-modal">
+                            <img src="https://images.unsplash.com/photo-1536939459926-301728717817?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Document cover" class="document-cover">
+                            <div class="document-info">
+                                <h3><i class="fas fa-book-open"></i> Marine Conservation Guide</h3>
+                                <p>Technical document with updated information on ocean protection</p>
+                                <button class="view-document-btn">
+                                    <i class="fas fa-eye"></i> View Document
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="document-details">
+                            <h3 style="color: var(--water); margin-bottom: 1rem;">Featured Content:</h3>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Impact of plastic pollution</li>
+                                <li><i class="fas fa-check"></i> Sustainable fishing strategies</li>
+                                <li><i class="fas fa-check"></i> Protection of endangered species</li>
+                                <li><i class="fas fa-check"></i> International legislation</li>
+                                <li><i class="fas fa-check"></i> Successful case studies</li>
+                                <li><i class="fas fa-check"></i> Individual and collective actions</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -615,6 +837,20 @@
                 </div>
             </div>
         </section>
+
+        <!-- PDF Modal -->
+        <div id="pdf-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 style="color: var(--water); margin-bottom: 1.5rem;">Marine Conservation Guide</h2>
+                <canvas id="pdf-viewer"></canvas>
+                <div class="pdf-controls">
+                    <button id="prev-page"><i class="fas fa-arrow-left"></i> Anterior</button>
+                    <span class="page-info" style="white-space: pre;" >Previous <span id="page-num">1</span> of <span id="page-count">0</span></span>
+                    <button id="next-page">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer id="contact">
@@ -622,9 +858,6 @@
             <div class="footer-column">
                 <h3>SDGs 2030 COIL</h3>
                 <p>Informative blog about the Sustainable Development Goals. We share knowledge and actions for a better future.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                </div>
             </div>
             
             <div class="footer-column">
@@ -637,9 +870,159 @@
             
             <div class="footer-column">
                 <h3>Contact</h3>
-                <p><i class="fas fa-phone"></i> +52 (833) 442-7876 </p>
+                <p><i class="fas fa-phone"></i> mriordan4@mercy.edu (Madison Riordan) </p>
+                <p><i class="fas fa-phone"></i> a185326@une.edu.mx (Yael Monterrubio) </p>
+                <p><i class="fas fa-phone"></i> a186180@une.edu.mx (Maximiliano Robles) </p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Configuración del visor PDF
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+        
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.5;
+        
+        const modal = document.getElementById('pdf-modal');
+        const openModalBtn = document.getElementById('open-pdf-modal');
+        const closeModal = document.getElementsByClassName('close-modal')[0];
+        const viewer = document.getElementById('pdf-viewer');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+        const pageNumEl = document.getElementById('page-num');
+        const pageCountEl = document.getElementById('page-count');
+        
+        // Ruta CORRECTA del PDF - Asegúrate de que coincida con tu estructura
+        const pdfPath = 'img/lifebellow.pdf';
+        
+        // Abrir modal
+        openModalBtn.onclick = function() {
+            modal.style.display = "block";
+            loadPDF(pdfPath);
+        }
+        
+        // Cerrar modal
+        closeModal.onclick = function() {
+            modal.style.display = "none";
+            // Limpiar el visor al cerrar
+            viewer.getContext('2d').clearRect(0, 0, viewer.width, viewer.height);
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // Función mejorada para cargar PDF
+        function loadPDF(url) {
+            // Mostrar estado de carga
+            viewer.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--water);">' +
+                               '<i class="fas fa-spinner fa-spin fa-2x"></i>' +
+                               '<p>Cargando documento...</p></div>';
+            
+            // Limpiar errores previos
+            pageNumEl.textContent = '1';
+            pageCountEl.textContent = '0';
+            
+            // Eliminar caché para desarrollo
+            const cacheBuster = '?v=' + new Date().getTime();
+            const pdfUrl = url + cacheBuster;
+            
+            pdfjsLib.getDocument({
+                url: pdfUrl,
+                withCredentials: false
+            }).promise.then(function(pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                pageCountEl.textContent = pdfDoc.numPages;
+                renderPage(1);
+            }).catch(function(error) {
+                console.error('PDF Error:', error);
+                showPdfError(url, error);
+            });
+        }
+        
+        function showPdfError(url, error) {
+            viewer.innerHTML = `
+                <div style="text-align:center; padding:2rem; color:#d32f2f;">
+                    <i class="fas fa-exclamation-triangle fa-3x"></i>
+                    <h3>Error al cargar el documento</h3>
+                    <p>${error.message}</p>
+                    <div style="background:#f5f5f5; padding:1rem; margin:1rem 0; border-radius:4px; text-align:left;">
+                        <p><strong>Detalles técnicos:</strong></p>
+                        <p>Ruta intentada: <code>${url}</code></p>
+                        <p>Tipo de error: ${error.name}</p>
+                    </div>
+                    <p>Verifica que el archivo exista y tenga permisos de lectura.</p>
+                </div>
+            `;
+        }
+        
+        function renderPage(num) {
+            pageRendering = true;
+            
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({ scale: scale });
+                viewer.height = viewport.height;
+                viewer.width = viewport.width;
+                
+                const context = viewer.getContext('2d');
+                context.clearRect(0, 0, viewer.width, viewer.height);
+                
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                page.render(renderContext).promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+            
+            pageNumEl.textContent = num;
+        }
+        
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+        
+        prevPageBtn.addEventListener('click', function() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        });
+        
+        nextPageBtn.addEventListener('click', function() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        });
+        
+        // Verificación inicial de la ruta del PDF
+        document.addEventListener('DOMContentLoaded', function() {
+            // Solo para desarrollo - verifica si el archivo existe
+            fetch(pdfPath)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('El PDF no se encuentra en la ruta especificada:', pdfPath);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error verificando el PDF:', error);
+                });
+        });
+    </script>
 </body>
 </html>
